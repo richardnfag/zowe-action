@@ -1,0 +1,50 @@
+name: Zowe CLI
+
+description: Create Zowe CLI profile
+
+branding:
+  icon: server
+  color: blue
+
+inputs:
+  ZOSMF_OPTION_NAME:
+    description: Zowe profile name
+    required: true
+  ZOSMF_OPTION_HOST:
+    description: Zowe profile host
+    required: true
+  ZOSMF_OPTION_PORT:
+    description: Zowe profile port
+    required: true
+  ZOSMF_OPTION_USER:
+    description: Zowe profile user
+    required: true
+  ZOSMF_OPTION_PASSWORD:
+    description: Zowe profile password
+    required: true
+  ZOSMF_OPTION_REJECT_UNAUTHORIZED:
+    description: Zowe profile reject unauthorized option
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Zowe CLI
+      run: |
+        sudo npm i -g @zowe/cli
+        sudo chown -R $(whoami) /home/runner/.zowe/
+      shell: bash
+      env:
+        NODE_ENV: production
+    - name: Create Zowe profile
+      run: >-
+        zowe profiles create 
+        zosmf-profile "${{ inputs.ZOSMF_OPTION_NAME }}" 
+        --host "${{ inputs.ZOSMF_OPTION_HOST }}" 
+        --port "${{ inputs.ZOSMF_OPTION_PORT }}" 
+        --user "${{ inputs.ZOSMF_OPTION_USER }}" 
+        --password "${{ inputs.ZOSMF_OPTION_PASSWORD }}" 
+        --reject-unauthorized "${{ inputs.ZOSMF_OPTION_REJECT_UNAUTHORIZED }}"
+      shell: bash
+      env:
+        NODE_ENV: production
